@@ -1,0 +1,29 @@
+{
+    "name": "rawburner/configuration-bundle",
+    "description": "Provides a simple configuration interface for admin backends",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Keil",
+            "email": "alexander.keil80@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.0",
+        "symfony/form": "^2.7 || ^3.0",
+        "symfony/framework-bundle": "^2.7 || ^3.0",
+        "symfony/twig-bundle": "^2.7 || ^3.0",
+        "twig/twig": "^1.28 || ^2.0",
+        "symfony/templating": "^2.7 || ^3.0"
+    },
+	"autoload": {
+        "psr-4": {
+            "ConfigurationBundle\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    }
+}

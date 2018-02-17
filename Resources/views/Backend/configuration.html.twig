@@ -1,0 +1,178 @@
+{% extends '@SmartAdmin/Base/base.html.twig' %}
+{% block title %}Shop-Konfiguration{% endblock %}
+{% block content %}
+    <section id="widget-grid">
+        <article class="col-sm-12 col-md-12 col-lg-8">
+            <form action="{{ url('configuration_list') }}" method="post">
+                {% for group in getConfigGroups(is_granted('ROLE_SUPER_ADMIN')) %}
+                    <div class="jarviswidget jarviswidget-sortable jarviswidget-collapsed"
+                         data-widget-colorbutton="false"
+                         data-widget-editbutton="false"
+                         data-widget-fullscreenbutton="false"
+                         data-widget-collapsed="true"
+                         role="widget">
+                        <!-- widget options:
+                        usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                        data-widget-togglebutton="false"
+                        data-widget-deletebutton="false"
+                        data-widget-fullscreenbutton="false"
+                        data-widget-custombutton="false"
+                        data-widget-sortable="false"
+
+                        -->
+                        <header role="heading">
+                            <div class="jarviswidget-ctrls" role="menu">
+                                <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse"><i class="fa fa-plus "></i></a>
+                            </div>
+                            <span class="widget-icon"> <i class="fa fa-gears"></i> </span>
+                            <h2>{{ group.group }}</h2>
+                            <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                        <!-- widget div-->
+                        <div role="content" style="display: none">
+                            <!-- widget edit box -->
+                            <div class="jarviswidget-editbox">
+                                <!-- This area used as dropdown edit box -->
+                            </div>
+                            <!-- end widget edit box -->
+                            <!-- widget content -->
+                            <div class="widget-body ">
+                                {% for conf in getConfigForGroup(group, is_granted('ROLE_SUPER_ADMIN')) %}
+                                    <div class="form-group">
+                                        <label for="conf_name_{{ conf.id }}">
+                                            {{ conf.name }}&nbsp;
+                                        </label>
+                                        {% if conf.type == 'text' %}
+                                            <input class="form-control" type="text" id="conf_name_{{ conf.id }}" name="conf_value[{{ conf.id }}]" value="{{ conf.value }}">
+                                        {% elseif conf.type == 'textarea' %}
+                                            <textarea id="conf_name_{{ conf.id }}" name="conf_value[{{ conf.id }}]" class="form-control" rows="3">{{ conf.value }}</textarea>
+                                        {% elseif conf.type == 'dropdown' %}
+                                            <select id="conf_name_{{ conf.id }}" name="conf_value[{{ conf.id }}]" class="form-control">
+                                                {% for opt in conf.optionsArray %}
+                                                    <option {% if conf.value==opt %}selected{% endif %}>{{ opt }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                                <button type="submit" class="btn btn-primary">{{ getConfigVar('smartadmin common save all') }}</button>
+                            </div>
+                            <!-- end widget content -->
+                        </div>
+                    </div>
+                {% endfor %}
+            </form>
+        </article>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <article class="col-sm-12 col-md-12 col-lg-4">
+                <div class="jarviswidget jarviswidget-sortable"
+                     data-widget-colorbutton="false"
+                     data-widget-editbutton="false"
+                     data-widget-fullscreenbutton="false"
+                     role="widget">
+                    <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+                    <header role="heading">
+                        <div class="jarviswidget-ctrls" role="menu">
+                            <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse"><i class="fa fa-minus "></i></a>
+                        </div>
+
+                        <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                        <h2>Optionen </h2>
+
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+
+                        <!-- widget content -->
+                        <div class="widget-body smart-form">
+
+                            <h3>Neue Einstellung hinzufügen</h3>
+                            <form action="{{ url('configuration_add') }}" method="post">
+                                <fieldset>
+                                    <div class="row">
+                                        <section>
+                                            <div class="form-group">
+                                                <label for="conf_name">Einstellung Name</label>
+                                                <input class="form-control" type="text" id="conf_name" name="conf_name" required>
+                                            </div>
+                                        </section>
+                                        <section>
+                                            <div class="form-group">
+                                                <label for="conf_name">Einstellung Wert</label>
+                                                <textarea id="conf_value" name="conf_newvalue" class="form-control" rows="3"></textarea>
+                                            </div>
+                                        </section>
+                                        <section>
+                                            <div class="form-group">
+                                                <label for="conf_name">Einstellung in Gruppe</label>
+                                                <select id="conf_type" name="conf_group" class="form-control" required>
+                                                    <option value="">Bitte wählen</option>
+                                                    <option >Systemeinstellungen</option>
+                                                    <option >Preise</option>
+                                                    <option >Artikel</option>
+                                                    <option >Bestellungen</option>
+                                                    <option >Ansicht</option>
+                                                    <option >Texte in Mails</option>
+                                                    <option >Texte im Frontend</option>
+                                                    <option >Texte im Backend</option>
+                                                </select>
+                                            </div>
+                                        </section>
+                                        <section>
+                                            <div class="form-group">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="conf_public" value="1"/>
+                                                    <i></i>Öffentlich
+                                                </label>
+
+                                            </div>
+                                        </section>
+                                        <section>
+                                            <div class="form-group">
+                                                <label for="conf_options">Vorgabe Werte (Nur für DropDowns, 1 Wert pro Zeile)</label>
+                                                <textarea id="conf_options" name="conf_options" class="form-control" rows="3"></textarea>
+                                            </div>
+                                        </section>
+                                        <section>
+                                            <div class="form-group">
+                                                <label for="conf_type">Einstellung Typ</label>
+                                                <select id="conf_type" name="conf_type" class="form-control">
+                                                    <option value="text">Textfeld</option>
+                                                    <option value="textarea">Textarea</option>
+                                                    <option value="dropdown">DropDown</option>
+                                                </select>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </fieldset>
+                                <footer>
+                                    <button type="submit" class="btn btn-primary">Speichern</button>
+                                </footer>
+                            </form>
+                        </div>
+                        <!-- end widget content -->
+                    </div>
+                </div>
+            </article>
+        {% endif %}
+    </section>
+
+{% endblock %}
