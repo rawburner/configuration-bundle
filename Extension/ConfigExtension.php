@@ -80,8 +80,8 @@ class ConfigExtension extends \Twig_Extension
      * @param $name
      * @return string
      */
-    public function getConfigVar($name)
+    public function getConfigVar($name, $fallback=null)
     {
-       return $this->em->getRepository('ConfigurationBundle:Configuration')->getConfigVar($name);
+       return $this->em->getRepository('ConfigurationBundle:Configuration')->getConfigVar($name, $fallback);
     }
 }

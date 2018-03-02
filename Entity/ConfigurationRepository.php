@@ -144,7 +144,7 @@ class ConfigurationRepository extends EntityRepository
         $query = $this->createQueryBuilder('c');
         $query->select('c.group');
         if($withPrivate){
-            $query->where('c.public < 1' );
+            $query->where('c.public <= 1' );
         }else{
             $query->where('c.public = 1' );
         }
