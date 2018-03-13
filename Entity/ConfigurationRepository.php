@@ -18,6 +18,10 @@ class ConfigurationRepository extends EntityRepository
      * @var array
      */
     protected $cacheValues = [];
+    /**
+     * @var null|array
+     */
+    protected $cacheConfigurations = null;
 
     /**
      * Get config var if exists
@@ -31,9 +35,8 @@ class ConfigurationRepository extends EntityRepository
             return $this->cacheValues[$name];
         }
         /** @var Configuration $config */
-        $config = $this->findOneBy([
-            'name' => trim($name)
-        ]) ;
+        $config = $this->getCachedConfiguration($name);
+
         switch(true){
             case $config instanceof Configuration && $config->getType() == 'dropdown' && $config->getValue() == 'false':
                 $this->cacheValues[$name] = false;
@@ -53,7 +56,24 @@ class ConfigurationRepository extends EntityRepository
         }
         return $this->cacheValues[$name];
 
+    }
 
+    /**
+     * @param $name
+     * @return Configuration|null
+     */
+    protected function getCachedConfiguration($name){
+        $name = trim($name);
+        if($this->cacheConfigurations === null){
+            /** @var Configuration $configuration */
+            foreach ($this->findAll() as $configuration){
+                $this->cacheConfigurations[$configuration->getName()] = $configuration;
+            }
+        }
+        if(array_key_exists($name, $this->cacheConfigurations)){
+            return $this->cacheConfigurations[$name];
+        }
+        return null;
     }
 
     /**
@@ -123,14 +143,9 @@ class ConfigurationRepository extends EntityRepository
      */
     public function isConfigVarExists($name)
     {
-        $config = $this->findOneBy([
-            'name' => trim($name)
-        ]) ;
+        $config = $this->getCachedConfiguration($name);
 
-        if(empty($config)){
-            return false;
-        }
-        if(!$config->getValue()){
+        if(!$config){
             return false;
         }
         return true;
