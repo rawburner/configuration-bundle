@@ -65,6 +65,7 @@ class ConfigurationRepository extends EntityRepository
     protected function getCachedConfiguration($name){
         $name = trim($name);
         if($this->cacheConfigurations === null){
+            $this->cacheConfigurations = [];
             /** @var Configuration $configuration */
             foreach ($this->findAll() as $configuration){
                 $this->cacheConfigurations[$configuration->getName()] = $configuration;
