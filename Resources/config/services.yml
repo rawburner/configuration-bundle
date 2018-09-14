@@ -1,21 +1,8 @@
 services:
-  config.repo:
-      class: ConfigurationBundle\Entity\ConfigurationRepository
-      factory: ["@doctrine.orm.default_entity_manager", "getRepository"]
-      arguments: ["ConfigurationBundle:Configuration"]
   config.extension:
       class: ConfigurationBundle\Extension\ConfigExtension
       public: true
       tags:
         - { name: twig.extension }
       arguments:
-        - "@doctrine.orm.default_entity_manager"
-  config.controller:
-      class: ConfigurationBundle\Controller\Backend\ConfigurationController
-      public: true
-      arguments:
-        - "@config.repo"
-        - "@router.default"
-        - "@session"
-        - "@twig"
         - "@doctrine.orm.default_entity_manager"
