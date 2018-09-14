@@ -1,5 +1,6 @@
 <?php
 namespace ConfigurationBundle\Extension;
+use ConfigurationBundle\Entity\Configuration;
 use ConfigurationBundle\Entity\ConfigurationRepository;
 
 /**
@@ -44,7 +45,7 @@ class ConfigExtension extends \Twig_Extension
      */
     public function getConfigurationByGroup($groupName,$withPrivate = false){
         /** @var ConfigurationRepository $repo */
-        $repo =  $this->em->getRepository('ConfigurationBundle:Configuration');
+        $repo =  $this->em->getRepository(Configuration::class);
         $findBy = [
             'group' => $groupName,
             'public' => 1
@@ -61,7 +62,7 @@ class ConfigExtension extends \Twig_Extension
      */
     public function getConfigurationGroups($withPrivate = false){
         /** @var ConfigurationRepository $repo */
-        $repo =  $this->em->getRepository('ConfigurationBundle:Configuration');
+        $repo =  $this->em->getRepository(Configuration::class);
         return $repo->getOnlyGroups($withPrivate);
     }
 
