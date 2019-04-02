@@ -126,14 +126,9 @@
                                                 <label for="conf_name">{% trans %}Einstellung in Gruppe{% endtrans %}</label>
                                                 <select id="conf_type" name="conf_group" class="form-control" required>
                                                     <option value="">Bitte wählen</option>
-                                                    <option >Systemeinstellungen</option>
-                                                    <option >Preise</option>
-                                                    <option >Artikel</option>
-                                                    <option >Bestellungen</option>
-                                                    <option >Ansicht</option>
-                                                    <option >Texte in Mails</option>
-                                                    <option >Texte im Frontend</option>
-                                                    <option >Texte im Backend</option>
+                                                    {% for group in getConfigGroups() %}
+                                                        <option>{{ group.group }}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </section>

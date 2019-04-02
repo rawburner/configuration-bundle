@@ -4,25 +4,21 @@ namespace ConfigurationBundle\Controller\Backend;
 
 use ConfigurationBundle\Entity\Configuration;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ConfigurationController
- * @package ConfigurationBundle\Backend\Controller
+ * @author Alexander Keil (alexanderkeil@leik-software.com)
  */
-class ConfigurationController extends Controller
+class ConfigurationController extends AbstractController
 {
 
     /**
      * @Route("/configuration/list", name="configuration_list")
-     * @param Request $request
-     * @return Response
      */
-    public function configurationAction(Request $request)
+    public function configurationAction(Request $request): Response
     {
         if($request->request->has('conf_value')){
             foreach ($request->request->get('conf_value') as $id => $conf){
@@ -44,10 +40,9 @@ class ConfigurationController extends Controller
     /**
      * @Route("/configuration/delete/{id}", name="configuration_delete")
      * @ParamConverter("configuration", class="ConfigurationBundle:Configuration")
-     * @param $configuration Configuration
-     * @return RedirectResponse
      */
-    public function deleteConfigurationAction($configuration){
+    public function deleteConfigurationAction(Configuration $configuration): Response
+    {
         $this->getDoctrine()->getManager()->remove($configuration);
         $this->getDoctrine()->getManager()->flush();
         $this->addFlash('notice', 'Konfiguration '.$configuration->getName().' entfernt');
@@ -56,10 +51,8 @@ class ConfigurationController extends Controller
 
     /**
      * @Route("/configuration/add", name="configuration_add")
-     * @param Request $request
-     * @return RedirectResponse
      */
-    public function addConfigurationAction(Request $request)
+    public function addConfigurationAction(Request $request): Response
     {
         if($request->request->has('conf_name')){
             $configuration = new Configuration();
