@@ -3,8 +3,10 @@ namespace ConfigurationBundle\Extension;
 use ConfigurationBundle\Entity\Configuration;
 use ConfigurationBundle\Entity\ConfigurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class ConfigExtension extends \Twig_Extension
+class ConfigExtension extends AbstractExtension
 {
     /**
      * @var EntityManagerInterface
@@ -21,10 +23,10 @@ class ConfigExtension extends \Twig_Extension
     public function getFunctions(): array
     {
         return [
-            new \Twig_SimpleFunction('getConfigVar', [$this, 'getConfigVar']),
-            new \Twig_SimpleFunction('getConfigGroups', [$this, 'getConfigurationGroups']),
-            new \Twig_SimpleFunction('getConfigForGroup', [$this, 'getConfigurationByGroup']),
-            new \Twig_SimpleFunction('getConfigVarAsArray', [$this, 'getConfigVarAsArray']),
+            new TwigFunction('getConfigVar', [$this, 'getConfigVar']),
+            new TwigFunction('getConfigGroups', [$this, 'getConfigurationGroups']),
+            new TwigFunction('getConfigForGroup', [$this, 'getConfigurationByGroup']),
+            new TwigFunction('getConfigVarAsArray', [$this, 'getConfigVarAsArray']),
         ];
     }
 

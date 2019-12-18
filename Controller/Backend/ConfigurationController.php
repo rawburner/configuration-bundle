@@ -4,7 +4,9 @@ namespace ConfigurationBundle\Controller\Backend;
 
 use ConfigurationBundle\Entity\Configuration;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,8 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @author Alexander Keil (alexanderkeil@leik-software.com)
  */
-class ConfigurationController extends AbstractController
+class ConfigurationController implements ContainerAwareInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
     /**
      * @Route("/configuration/list", name="configuration_list")
@@ -22,18 +28,18 @@ class ConfigurationController extends AbstractController
     {
         if($request->request->has('conf_value')){
             foreach ($request->request->get('conf_value') as $id => $conf){
-                $configuration = $this->getDoctrine()->getRepository(Configuration::class)->find($id);
+                $configuration = $this->container->get('doctrine.orm.entity_manager')->getRepository(Configuration::class)->find($id);
                 if(!$configuration){
                     continue;
                 }
                 $configuration->setValue($request->request->get('conf_value')[$id]);
-                $this->getDoctrine()->getManager()->persist($configuration);
+                $this->container->get('doctrine.orm.entity_manager')->persist($configuration);
             }
-            $this->addFlash('notice', 'Konfiguration aktualisiert');
-            $this->getDoctrine()->getManager()->flush();
+            $this->container->get('session')->getFlashBag()->add('notice', 'Konfiguration aktualisiert');
+            $this->container->get('doctrine.orm.entity_manager')->flush();
         }
 
-        return $this->render('@Configuration/Backend/configuration.html.twig');
+        return new Response($this->container->get('twig')->render('@Configuration/Backend/configuration.html.twig'));
     }
 
 
@@ -43,9 +49,9 @@ class ConfigurationController extends AbstractController
      */
     public function deleteConfigurationAction(Configuration $configuration): Response
     {
-        $this->getDoctrine()->getManager()->remove($configuration);
-        $this->getDoctrine()->getManager()->flush();
-        $this->addFlash('notice', 'Konfiguration '.$configuration->getName().' entfernt');
+        $this->container->get('doctrine.orm.entity_manager')->remove($configuration);
+        $this->container->get('doctrine.orm.entity_manager')->flush();
+        $this->container->get('session')->getFlashBag()->add('notice', 'Konfiguration '.$configuration->getName().' entfernt');
         return $this->redirectToRoute('configuration_list');
     }
 
@@ -62,11 +68,21 @@ class ConfigurationController extends AbstractController
             $configuration->setOptions($request->request->get('conf_options'));
             $configuration->setPublic($request->request->get('conf_public', 0));
             $configuration->setGroup($request->request->get('conf_group'));
-            $this->getDoctrine()->getManager()->persist($configuration);
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('notice', 'Konfiguration '.$configuration->getName().' erstellt');
+            $this->container->get('doctrine.orm.entity_manager')->persist($configuration);
+            $this->container->get('doctrine.orm.entity_manager')->flush();
+            $this->container->get('session')->getFlashBag()->add('notice', 'Konfiguration '.$configuration->getName().' erstellt');
         }
         return $this->redirectToRoute('configuration_list');
     }
 
+    protected function redirectToRoute(string $routename): RedirectResponse
+    {
+        $route = $this->container->get('router')->generate($routename);
+        return new RedirectResponse($route);
+    }
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
 }
